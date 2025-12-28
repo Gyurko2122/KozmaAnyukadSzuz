@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piactér - Egyedi kézműves termékek</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">Piactér</a>
+            <a href="#news" class="logo">Hírek</a>
+            
+            
+           <div class="search-container">
+    <form action="/search-results.html" method="GET" id="search-form">
+        <input name="q" id="search-input" type="search" placeholder="Keress termékekre..." aria-label="Keress termékekre">
+        <button class="search-btn" type="submit">
+            
+        </button>
+    </form>
+</div>
+            <div class="header-controls">
+                <nav class="user-nav" id="user-nav"></nav>
+            </div>
+        </div>
+    </header>
+    
+         
+            
+            <div class="carousel-wrapper">
+                <div class="carousel" id="carousel">
+                    <button class="carousel-arrow left" id="carousel-left"></button>
+                    <img src="img/asd.webp" class="carousel-img" style="display:block;" />
+                    <img src="img/asdasdds.jpg" class="carousel-img" style="display:none;" />
+                    <img src="img/lukas.jpg" class="carousel-img" style="display:none;" />
+                    <img src="img/sor.jpg" class="carousel-img" style="display:none;" />
+                    <img src="img/kezmu.jpg" class="carousel-img" style="display:none;" />
+                    <button class="carousel-arrow right" id="carousel-right"></button>
+                </div>
+            </div>
+            
+        <div class="container">
+            <div class="row">
+                <div class="col-9">
+                    <section class="latest-ads">
+                        <h2>Legújabb Termékek</h2>
+                        <div id="all-ads-container" class="ads-grid"></div>
+                    </section>
+                </div>
+                <div class="col-3">
+                    <section class="news-section">
+                        <h2 id="news">Hírek</h2>
+                        <div class="news-items">
+                            <div class="news-item">
+                                <h3>Új kézműves kategória</h3>
+                                <p class="news-date">2025. október 9.</p>
+                                <p>Új kerámiák és agyagedények kategória nyílt! Fedezze fel egyedi kézműves termékeinket.</p>
+                            </div>
+                            <div class="news-item">
+                                <h3>Őszi vásár</h3>
+                                <p class="news-date">2025. október 8.</p>
+                                <p>Készüljön az őszre kézműves dekorációkkal! Különleges ajánlatok egész héten.</p>
+                            </div>
+                            <div class="news-item">
+                                <h3>Kézműves workshop</h3>
+                                <p class="news-date">2025. október 7.</p>
+                                <p>Hétvégi workshop: Tanulja meg a kosárfonás alapjait helyi mesterektől!</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+ 
+   
+                    <div class="footer">
+                <footer>
+<ul>
+    <li>Kapcsolat: 06306462461</li>
+    <li>Email: piacter@gmail.com</li>
+    <li>&copy; Minden Jog fenntartva Piactér</li>
+</ul>
+
+<ul>
+    <a class="up"href="#">Kattintson ide a felgorgeteshez<a>
+</ul>
+                </footer>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+ 
+  $("a").on('click', function(event) {
+
+    
+    if (this.hash !== "") {
+      
+      event.preventDefault();
+
+      
+      var hash = this.hash;
+
+      
+      $('html, body,footer').animate({
+        scrollTop: $(hash).offset().top
+      }, 800, function(){
+
+       
+        window.location.hash = hash;
+      });
+    } 
+  });
+});
+</script> 
+
+</body>
+</html>

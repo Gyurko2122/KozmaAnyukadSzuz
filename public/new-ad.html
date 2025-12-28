@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Új Termék - Piactér</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/app.js" defer></script>
+</head>
+<body class="body-form">
+    <header class="form-header"><a href="/" class="logo-simple">Piactér</a></header>
+    <div class="form-container" style="max-width: 600px;">
+        <h2>Új termék meghirdetése</h2>
+        <form id="new-ad-form">
+            <div class="form-group"><label for="productName">Termék neve:</label><input type="text" id="productName" name="productName" required></div>
+            <div class="form-group"><label for="price">Ár (Ft):</label><input type="number" id="price" name="price" required></div>
+            <div class="form-group"><label for="location">Helyileg:</label><input type="text" id="location" name="location" required></div>
+            <div class="form-group"><label for="description">Leírás:</label><textarea id="description" name="description" rows="4" required></textarea></div>
+            <div class="form-group"><label for="productImage">Kép a termékről:</label><input type="file" id="productImage" name="productImage" accept="image/*" required></div>
+            <button type="submit" class="btn-submit">Termék meghirdetése</button>
+        </form>
+    </div>
+</body>
+</html>

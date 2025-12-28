@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keresési Találatok - Piactér</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">Piactér</a>
+            <div class="search-container">
+                <form id="search-form">
+                    <input id="search-input" type="search" placeholder="Keress termékekre vagy személyekre..." autocomplete="off">
+                    <button class="search-btn" type="submit">
+                        <svg width="20" height="20" viewBox="0 0 20 20"><path d="M14.386 14.386l4.0877 4.0877-4.0877-4.0877c-2.9418 2.9419-7.7115 2.9419-10.6533 0-2.9419-2.9418-2.9419-7.7115 0-10.6533 2.9418-2.9419 7.7115-2.9419 10.6533 0 2.9419 2.9418 2.9419 7.7115 0 10.6533z" stroke="currentColor" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    </button>
+                </form>
+            </div>
+            <div class="header-controls">
+                <nav class="user-nav" id="user-nav"></nav>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container" id="search-results-page">
+            <div class="search-header-box">
+                <h1>Keresés</h1>
+                <div class="filter-controls">
+                    <a href="#" class="filter-btn active">Termék</a>
+                    
+                </div>
+                <div id="results-summary">Találatok betöltése...</div>
+            </div>
+            <div id="search-results-container" class="search-results-list">
+                </div>
+        </div>
+    </main>
+</body>
+</html>
