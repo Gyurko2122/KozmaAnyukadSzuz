@@ -11,7 +11,7 @@ mongoose.connect(URI + Name)
 
 const Users = new mongoose.Schema({
     username: { type: String, required: true, unique: true, trim: true },
-    email: { type: String, unique: true, required: true, match: [/^\S+@\S+\.\S+$/, 'Invalid email format'], trim: true },
+    email: { type: String, unique: false, required: true, match: [/^\S+@\S+\.\S+$/, 'Invalid email format'], trim: true },
     password: { type: String, required: true, minlength: 8 }
 });
 
