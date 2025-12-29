@@ -220,12 +220,40 @@ header {
   margin-bottom: 0px;
 }
 
+/* Header layout: left links, centered search, right controls */
 header .container {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  gap: 1rem 2rem;
+  position: relative;
+}
+/* Make header container span full width so items can sit at page edges */
+header .container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 24px;
+}
+
+.left-nav {
+  display: flex;
   gap: 1.5rem;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-self: start;
+}
+
+.search-container {
+  justify-self: center;
+  width: 100%;
+  max-width: 420px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  justify-self: end;
 }
 
 .logo {
@@ -238,14 +266,14 @@ header .container {
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 nav#user-nav,
 .user-nav ul {
   display: flex;
   align-items: flex-end;
-  gap: 1.5rem;
+  gap: 2.5rem;
   list-style: none;
 }
 
@@ -958,9 +986,16 @@ article,
   font-weight: 700;
   color: #4a4a4a;
   text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .logo:hover{
+background-color: #d9774a 3px 3px 5px;
+box-shadow: 5px 5px 5px rgba(223, 141, 65, 1);
+}
+ .logo-simple:hover{
 background-color: #d9774a 3px 3px 5px;
 box-shadow: 5px 5px 5px rgba(223, 141, 65, 1);
 }

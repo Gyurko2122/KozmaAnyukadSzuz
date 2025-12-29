@@ -166,6 +166,14 @@
       "message": "dasas",
       "timestamp": 1766950990336,
       "isRead": true
+    },
+    {
+      "id": 1767021213199,
+      "fromUser": "Fasz",
+      "toUser": "Gyurko",
+      "message": "Halo",
+      "timestamp": 1767021213199,
+      "isRead": true
     }
   ]
 }

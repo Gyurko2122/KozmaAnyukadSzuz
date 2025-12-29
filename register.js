@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
     });
     
         await newUser.save();
-        await sendEmail(email, 'Sikeres regisztráció a Piactéren!', `Szia ${username}! Köszönjük, hogy regisztráltál a Piactér oldalára!`);
+        await sendEmail(email, 'Sikeres regisztráció a Piactéren!', username);
     res.status(201).json({ message: 'Sikeres regisztráció!' });
     } catch (error) {
         console.error('Hiba a felhasználó mentése során:', error);

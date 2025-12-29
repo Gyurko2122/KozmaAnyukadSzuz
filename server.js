@@ -10,6 +10,8 @@ require('dotenv').config();
 const Users = require('./database');
 const nodemailer = require('nodemailer');
 
+const favicon = require("serve-favicon");
+
 
 const app = express();
 const PORT = 3000;
@@ -22,6 +24,7 @@ app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/', register);
 app.use('/', login);
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // --- Multer (Fájlfeltöltés) Beállítása ---
 const storage = multer.diskStorage({
