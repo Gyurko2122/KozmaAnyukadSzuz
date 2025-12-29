@@ -1,7 +1,5 @@
 {
-  "users": [
-    
-  ],
+  "users": [],
   "ads": [
     {
       "id": 1757345923298,
@@ -159,7 +157,7 @@
       "toUser": "Gyurko",
       "message": "ghjhtg",
       "timestamp": 1766950988972,
-      "isRead": false
+      "isRead": true
     },
     {
       "id": 1766950990336,
@@ -167,7 +165,7 @@
       "toUser": "Gyurko",
       "message": "dasas",
       "timestamp": 1766950990336,
-      "isRead": false
+      "isRead": true
     }
   ]
 }

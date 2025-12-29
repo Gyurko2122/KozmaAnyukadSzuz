@@ -83,27 +83,32 @@ app.get('/api/ad/:id', async (req, res) => {
     }
 });
 
-app.get('/api/user/:username', async (req, res) => {
+app.get('/api/user/profile-picture/:username', async (req, res) => {
     const { username } = req.params;
-    const db = await readDatabase();
-    const user = db.users.find(u => u.username === username);
-    if (user) {
-        res.status(200).json({ username: user.username, email: user.email, profilePicture: user.profilePicture });
+    const user = await Users.findOne({ username: username });
+    if (user && user.picture) {
+        res.status(200).json({ profilePicture: user.picture });
     } else {
-        res.status(404).json({ message: 'A felhasználó nem található!' });
+        res.status(404).json({ message: 'Felhasználó vagy profilkép nem található!' });
     }
 });
+
+
 
 app.post('/upload-profile-picture', upload.single('profilePicture'), async (req, res) => {
     if (!req.file) { return res.status(400).json({ message: 'Nem lett fájl kiválasztva!' }); }
     const { username } = req.body;
     const filePath = `/uploads/${req.file.filename}`;
-    const db = await readDatabase();
-    const userIndex = db.users.findIndex(u => u.username === username);
-    if (userIndex === -1) { return res.status(404).json({ message: 'Felhasználó nem található' }); }
-    db.users[userIndex].profilePicture = filePath;
-    await writeDatabase(db);
-    res.status(200).json({ message: 'Kép sikeresen feltöltve!', filePath });
+    try {
+        await Users.findOneAndUpdate(
+            { username: username },
+            { $set: { picture: filePath } },
+            { new: true }
+        );
+        res.status(200).json({ filePath });
+    } catch (error) {
+        res.status(500).json({ message: 'Hiba történt a kép mentésekor!' });
+    }
 });
 
 app.post('/create-ad', upload.single('productImage'), async (req, res) => {
@@ -144,6 +149,22 @@ app.delete('/delete-ad/:id', async (req, res) => {
     await writeDatabase(db);
     res.status(200).json({ message: 'Hirdetés sikeresen törölve!' });
 });
+
+app.get('/api/users/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const email = await Users.aggregate([
+        { $match: { username: username } },
+        { $project: { _id: 0, email: 1 } }
+    ])
+      res.status(202).json({ message: `${username}`, email: email[0].email });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+
 
 app.post('/send-message', async (req, res) => {
     const { fromUser, toUser, message } = req.body;

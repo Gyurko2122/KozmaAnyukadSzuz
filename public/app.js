@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = sessionStorage.getItem("loggedInUser");
   updateNav(loggedInUser);
@@ -354,6 +356,7 @@ async function loadUserSearchResults() {
 async function loadProfilePage(loggedInUser) {
   const profileUsername =
     new URLSearchParams(window.location.search).get("user") || loggedInUser;
+   
   if (!profileUsername && !loggedInUser) {
     window.location.href = "/login.html";
     return;
@@ -363,19 +366,36 @@ async function loadProfilePage(loggedInUser) {
   loadUserAds(finalUsername);
 }
 
-async function loadProfileData(profileUsername, loggedInUser) {
+
+
+async function loadProfileData(profileUsername, loggedInUser,email) {
+  
   const profileImage = document.getElementById("profile-image");
   const imageUploadLabel = document.querySelector('label[for="image-upload"]');
   const buttonsContainer = document.getElementById("profile-action-buttons");
   const deleteUser = document.getElementById("delete-btn");
   try {
-    const response = await fetch(`/api/user/${profileUsername}`);
-    const userData = await response.json();
-    document.getElementById("profile-username").textContent = userData.username;
-    document.getElementById("profile-email").textContent = userData.email;
-    if (userData.profilePicture) {
-      profileImage.src = userData.profilePicture;
-    }
+    fetch('/api/users/' + profileUsername)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("profile-username").textContent = data.message;
+          document.getElementById("profile-email").textContent = data.email;
+          
+        })
+        fetch('/api/user/profile-picture/' + profileUsername)
+        .then(res => {
+          if (!res.ok) throw new Error('Nincs profilkép');
+          return res.json();
+        })
+        .then(data => {
+          profileImage.src = data.profilePicture;
+        })
+        .catch(err => {
+          profileImage.src = 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg';
+        });
+        
+    
+  
     if (loggedInUser === profileUsername) {
       if (imageUploadLabel) imageUploadLabel.style.display = "block";
     } else {
@@ -425,8 +445,11 @@ if (deleteUser) {
         body: formData,
       });
       if (response.ok) {
-        const data = await response.json();
-        profileImage.src = data.filePath;
+        
+        profileImage.src = formData.get("profilePicture")
+          ? URL.createObjectURL(formData.get("profilePicture"))
+          : profileImage.src;
+        alert("Profilkép sikeresen feltöltve!");
       }
     });
   }
