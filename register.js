@@ -2,9 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const Users = require('./database');
 const router = express.Router();
-const { readDatabase, writeDatabase, sendEmail } = require('./emailsender');
+const { sendEmail } = require('./emailsender');
 
-const nodemailer = require('nodemailer');
+
 require('dotenv').config();
 
 router.post('/register', async (req, res) => {

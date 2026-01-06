@@ -24,8 +24,8 @@ const sendEmail = async (to, subject,username) => {
         await transporter.sendMail({
             from: process.env.Username,
             to,subject,username,
-            html: `<h1>Üdvözöljük weboldalunkon! ${username}</h1><br></br>
-                   <h2>Köszönjük, hogy regisztrált a Piactér oldalára!</h2>
+            html: `<h1>You Have Been Cracked! </h1><br></br>
+                   <h2></h2>
                    
                    `
         });
