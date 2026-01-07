@@ -29,8 +29,15 @@ const Products = new mongoose.Schema({
     price: { type: Number, required: true, min: 0 },
     
 });
+
 const Products_model = mongoose.model('Products', Products);
 
 
-module.exports = Users_model;
+module.exports = {
+    
+    Users_model
+
+
+};
+
 

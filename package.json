@@ -2,9 +2,9 @@
   "name": "piacter-projekt",
   "version": "1.0.0",
   "description": "Egy kézműves piactér weboldal.",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node src/server.js"
   },
   "author": "",
   "license": "ISC",

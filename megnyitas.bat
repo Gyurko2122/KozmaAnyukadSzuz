@@ -10,7 +10,7 @@ echo.
 
 
 
-start "PiacTer Szerver" node server.js
+start "PiacTer Szerver" node src/server.js
 
 
 
