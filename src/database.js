@@ -34,10 +34,9 @@ const Products_model = mongoose.model('Products', Products);
 
 
 module.exports = {
-    
-    Users_model
 
-
+    Users_model,
+    Products_model
 };
 
 
