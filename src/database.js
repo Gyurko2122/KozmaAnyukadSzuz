@@ -1,19 +1,17 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const { connect, Schema, model } = mongoose;
 
-import "dotenv/config";
+require("dotenv").config();
 
 const URI = process.env.MONGODB_URI;
 const Name = process.env.DATABASE_NAME;
 
 connect(URI + Name)
   .then(() => {
-    "Connected to MongoDB database successfully.";
+    console.log("Connected to MongoDB database successfully.");
   })
-  .catch((err) =>
-    console.error("Connected to MongoDB database successfully.", err)
-  );
+  .catch((err) => console.error("Error connecting to MongoDB database:", err));
 
 const Users = new Schema({
   username: { type: String, required: true, unique: true, trim: true },
@@ -42,4 +40,4 @@ const Products = new Schema({
 
 const Products_model = model("Products", Products);
 
-export { Users_model, Products_model };
+module.exports = { Users_model, Products_model };

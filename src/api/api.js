@@ -4,7 +4,7 @@ const { sendEmail, readDatabase, writeDatabase } = require("../emailsender");
 const multer = require("multer");
 const path = require("path");
 
-const Users = require("../database");
+const { Users_model } = require("../database");
 
 require("dotenv").config();
 
@@ -56,7 +56,7 @@ router.get("/api/user/profile-picture/:username", async (req, res) => {
   try {
     const { username } = req.params;
     // JSON helyett a MongoDB modellben keressünk
-    const user = await Users.findOne({ username: username });
+    const user = await Users_model.findOne({ username: username });
 
     if (user && user.picture) {
       res.status(200).json({ profilePicture: user.picture });
@@ -76,7 +76,7 @@ router.post("/delete-btn", async (req, res) => {
       .json({ message: "Nem lett felhasználónév megadva." });
   try {
     console.log("Delete request for user:", loggedin);
-    const deleted = await Users.findOneAndDelete({ username: loggedin });
+    const deleted = await Users_model.findOneAndDelete({ username: loggedin });
     console.log("Delete result:", deleted);
     if (!deleted)
       return res.status(404).json({ message: "Felhasználó nem található." });
@@ -100,7 +100,7 @@ router.post(
 
     try {
       // A Users változót használd, ne a Users_model-t!
-      const result = await Users.findOneAndUpdate(
+      const result = await Users_model.findOneAndUpdate(
         { username: username },
         { $set: { picture: filePath } },
         { new: true }
@@ -145,23 +145,6 @@ router.post("/create-ad", upload.single("productImage"), async (req, res) => {
   res.status(201).json({ message: "Termék sikeresen meghirdetve!" });
 });
 
-router.get("/api/users/:username", async (req, res) => {
-  try {
-    const username = req.params.username;
-    const users = await Users.find({ username: username });
-
-    if (users.length > 0) {
-      res.status(200).json({ username: username, email: users[0].email });
-    } else {
-      res
-        .status(404)
-        .json({ message: "Felhasználó nem található a MongoDB-ben!" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
 router.get("/api/all-ads", async (req, res) => {
   const db = await readDatabase();
   res.status(200).json(db.ads.reverse());
@@ -182,7 +165,7 @@ router.delete("/delete-ad/:id", async (req, res) => {
 router.get("/api/users/:username", async (req, res) => {
   try {
     const username = req.params.username;
-    const email = await Users.aggregate([
+    const email = await Users_model.aggregate([
       { $match: { username: username } },
       { $project: { _id: 0, email: 1 } },
     ]);
