@@ -3,7 +3,7 @@ const router = express.Router();
 const { sendEmail, readDatabase, writeDatabase } = require("../emailsender");
 const multer = require("multer");
 const path = require("path");
-
+const { Products_model } = require("../database");
 const { Users_model } = require("../database");
 
 require("dotenv").config();
@@ -99,7 +99,6 @@ router.post(
     const filePath = `/uploads/${req.file.filename}`;
 
     try {
-      // A Users változót használd, ne a Users_model-t!
       const result = await Users_model.findOneAndUpdate(
         { username: username },
         { $set: { picture: filePath } },
@@ -123,6 +122,8 @@ router.post("/create-ad", upload.single("productImage"), async (req, res) => {
   const { productName, price, description, location, author } = req.body;
   const imageUrl = `/uploads/${req.file.filename}`;
   const db = await readDatabase();
+  const { username } = req.body;
+
   const newAd = {
     id: Date.now(),
     productName,
@@ -145,8 +146,23 @@ router.post("/create-ad", upload.single("productImage"), async (req, res) => {
   res.status(201).json({ message: "Termék sikeresen meghirdetve!" });
 });
 
+router.get("/api/user-ads/:username", async (req, res) => {
+  try {
+    const username = req.params.username;
+
+    const product = await Products_model.find({
+      author: username,
+    });
+    console.log({ username, product });
+    res.status(202).json({ message: `${username}`, product });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
 router.get("/api/all-ads", async (req, res) => {
   const db = await readDatabase();
+
   res.status(200).json(db.ads.reverse());
 });
 

@@ -38,6 +38,23 @@ const Products = new Schema({
   price: { type: Number, required: true, min: 0 },
 });
 
+const Payment = new Schema({
+  userid: { type: Number, required: true, unique: true },
+  Pmethod: { type: String, required: true },
+  lastDigit: { type: Number, required: true },
+});
+
+const Order = new Schema({
+  address: { type: String, required: true },
+  date: { type: Date, required: true },
+  Sellername: { type: String, required: true },
+  buyerName: { type: String, required: true },
+});
+
+const Order_model = model("Order", Order);
+
+const Payment_model = model("Payment", Payment);
+
 const Products_model = model("Products", Products);
 
-module.exports = { Users_model, Products_model };
+module.exports = { Users_model, Products_model, Payment_model, Order_model };

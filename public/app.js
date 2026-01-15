@@ -1,5 +1,3 @@
-
-
 document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = sessionStorage.getItem("loggedInUser");
   updateNav(loggedInUser);
@@ -33,10 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadChat(loggedInUser);
   }
 
-
-
-
-document.documentElement.style.scrollBehavior = "smooth"; 
+  document.documentElement.style.scrollBehavior = "smooth";
   // A kereső form most már a megfelelő oldalra irányít
   const searchForm = document.getElementById("search-form");
   if (searchForm) {
@@ -351,12 +346,10 @@ async function loadUserSearchResults() {
   }
 }
 
-
-
 async function loadProfilePage(loggedInUser) {
   const profileUsername =
     new URLSearchParams(window.location.search).get("user") || loggedInUser;
-   
+
   if (!profileUsername && !loggedInUser) {
     window.location.href = "/login.html";
     return;
@@ -366,36 +359,31 @@ async function loadProfilePage(loggedInUser) {
   loadUserAds(finalUsername);
 }
 
-
-
-async function loadProfileData(profileUsername, loggedInUser,email) {
-  
+async function loadProfileData(profileUsername, loggedInUser, email) {
   const profileImage = document.getElementById("profile-image");
   const imageUploadLabel = document.querySelector('label[for="image-upload"]');
   const buttonsContainer = document.getElementById("profile-action-buttons");
   const deleteUser = document.getElementById("delete-btn");
   try {
-    fetch('/api/users/' + profileUsername)
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("profile-username").textContent = data.message;
-          document.getElementById("profile-email").textContent = data.email;
-          
-        })
-        fetch('/api/user/profile-picture/' + profileUsername)
-        .then(res => {
-          if (!res.ok) throw new Error('Nincs profilkép');
-          return res.json();
-        })
-        .then(data => {
-          profileImage.src = data.profilePicture;
-        })
-        .catch(err => {
-          profileImage.src = 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg';
-        });
-        
-    
-  
+    fetch("/api/users/" + profileUsername)
+      .then((res) => res.json())
+      .then((data) => {
+        document.getElementById("profile-username").textContent = data.message;
+        document.getElementById("profile-email").textContent = data.email;
+      });
+    fetch("/api/user/profile-picture/" + profileUsername)
+      .then((res) => {
+        if (!res.ok) throw new Error("Nincs profilkép");
+        return res.json();
+      })
+      .then((data) => {
+        profileImage.src = data.profilePicture;
+      })
+      .catch((err) => {
+        profileImage.src =
+          "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
+      });
+
     if (loggedInUser === profileUsername) {
       if (imageUploadLabel) imageUploadLabel.style.display = "block";
     } else {
@@ -407,30 +395,33 @@ async function loadProfileData(profileUsername, loggedInUser,email) {
       if (buttonsContainer)
         buttonsContainer.innerHTML = `<a href="/chat.html?with=${profileUsername}" class="send-message-btn">Üzenet küldése</a>`;
     }
-    
   } catch (error) {
     console.error(error);
   }
 
-if (deleteUser) {
-  deleteUser.addEventListener("click", async () => {
-    if (!confirm("Biztosan törölni szeretnéd a fiókodat? Ez a művelet visszafordíthatatlan.")) return;
-    const response = await fetch("/delete-btn", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ loggedin: loggedInUser }),
+  if (deleteUser) {
+    deleteUser.addEventListener("click", async () => {
+      if (
+        !confirm(
+          "Biztosan törölni szeretnéd a fiókodat? Ez a művelet visszafordíthatatlan."
+        )
+      )
+        return;
+      const response = await fetch("/delete-btn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loggedin: loggedInUser }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        alert(data.message || "Fiókod sikeresen törölve!");
+        sessionStorage.removeItem("loggedInUser");
+        window.location.href = "/login.html";
+      } else {
+        alert(data.message || "A törlés nem sikerült.");
+      }
     });
-    const data = await response.json().catch(() => ({}));
-    if (response.ok) {
-      alert(data.message || "Fiókod sikeresen törölve!");
-      sessionStorage.removeItem("loggedInUser");
-      window.location.href = "/login.html";
-    } else {
-      alert(data.message || "A törlés nem sikerült.");
-    }
-  });
-}
-
+  }
 
   const imageUploadInput = document.getElementById("image-upload");
   if (imageUploadInput) {
@@ -445,7 +436,6 @@ if (deleteUser) {
         body: formData,
       });
       if (response.ok) {
-        
         profileImage.src = formData.get("profilePicture")
           ? URL.createObjectURL(formData.get("profilePicture"))
           : profileImage.src;
@@ -459,14 +449,16 @@ async function loadUserAds(username) {
   const container = document.getElementById("user-ads-container");
   if (!container) return;
   const response = await fetch(`/api/user-ads/${username}`);
+  console.log(response);
   const ads = await response.json();
+  console.log(ads);
   container.innerHTML = "";
-  if (ads.length === 0) {
+  if (ads.product.length === 0) {
     container.innerHTML =
       "<p>Ez a felhasználó még nem töltött fel terméket.</p>";
     return;
   }
-  ads.forEach((ad) => {
+  ads.product.forEach((ad) => {
     const adCard = document.createElement("div");
     adCard.className = "ad-card";
     let deleteButtonHtml = "";

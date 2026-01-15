@@ -9,6 +9,15 @@
       "location": "Bori",
       "imageUrl": "/uploads/1767824584172.png",
       "author": "Martin"
+    },
+    {
+      "id": 1768471645138,
+      "productName": "Valami",
+      "price": "200",
+      "description": "igen",
+      "location": "Valahol",
+      "imageUrl": "/uploads/1768471645133.jpg",
+      "author": "rgregre"
     }
   ],
   "messages": []
