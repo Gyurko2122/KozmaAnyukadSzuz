@@ -7,7 +7,7 @@ require("dotenv").config();
 const URI = process.env.MONGODB_URI;
 const Name = process.env.DATABASE_NAME;
 
-connect(URI + Name)
+connect(URI)
   .then(() => {
     console.log("Connected to MongoDB database successfully.");
   })
