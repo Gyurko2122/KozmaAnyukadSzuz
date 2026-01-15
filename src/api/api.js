@@ -42,13 +42,18 @@ router.get("/api/search-users", async (req, res) => {
 });
 
 router.get("/api/ad/:id", async (req, res) => {
-  const adId = parseInt(req.params.id, 10);
-  const db = await readDatabase();
-  const ad = db.ads.find((a) => a.id === adId);
-  if (ad) {
-    res.status(200).json(ad);
-  } else {
-    res.status(404).json({ message: "A hirdetés nem található!" });
+  try {
+    const adId = req.params.id;
+
+    const ad = await Products_model.findOne({ id: Number(adId) });
+
+    if (ad) {
+      res.status(200).json(ad);
+    } else {
+      res.status(404).json({ message: "A hirdetés nem található!" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Szerver hiba!" });
   }
 });
 
@@ -119,31 +124,40 @@ router.post("/create-ad", upload.single("productImage"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "Kép feltöltése kötelező!" });
   }
+
   const { productName, price, description, location, author } = req.body;
   const imageUrl = `/uploads/${req.file.filename}`;
-  const db = await readDatabase();
-  const { username } = req.body;
 
-  const newAd = {
-    id: Date.now(),
-    productName,
-    price,
-    description,
-    location,
-    imageUrl,
-    author,
-  };
-  db.ads.push(newAd);
-  await writeDatabase(db);
-  const authorData = db.users.find((u) => u.username === author);
-  if (authorData) {
-    await sendEmail(
-      authorData.email,
-      "Sikeres termékfeltöltés!",
-      `Szia ${author}! A termékedet "${productName}" néven sikeresen meghirdetted a Piactéren.`
-    );
+  try {
+    const newProduct = await Products_model.create({
+      id: Date.now(),
+      productName,
+      price: Number(price),
+      description,
+      location,
+      imageUrl,
+      author,
+    });
+
+    const authorData = await Users_model.findOne({ username: author });
+
+    if (authorData && authorData.email) {
+      await sendEmail(
+        authorData.email,
+        "Sikeres termékfeltöltés!",
+        `Szia ${author}! A termékedet "${productName}" néven sikeresen meghirdetted.`
+      );
+    }
+
+    res
+      .status(201)
+      .json({ message: "Termék sikeresen meghirdetve!", product: newProduct });
+  } catch (error) {
+    console.error("Hiba a feltöltéskor:", error);
+    res
+      .status(500)
+      .json({ message: "Hiba történt az adatbázis mentés során!" });
   }
-  res.status(201).json({ message: "Termék sikeresen meghirdetve!" });
 });
 
 router.get("/api/user-ads/:username", async (req, res) => {
@@ -161,9 +175,12 @@ router.get("/api/user-ads/:username", async (req, res) => {
 });
 
 router.get("/api/all-ads", async (req, res) => {
-  const db = await readDatabase();
-
-  res.status(200).json(db.ads.reverse());
+  try {
+    const ads = await Products_model.find().sort({ _id: -1 });
+    res.status(200).json(ads);
+  } catch (error) {
+    res.status(500).json({ message: "Hiba a hirdetések lekérésekor!" });
+  }
 });
 
 router.delete("/delete-ad/:id", async (req, res) => {
