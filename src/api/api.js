@@ -19,13 +19,32 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.get("/api/search", async (req, res) => {
-  const searchTerm = (req.query.q || "").toLowerCase();
+  const searchTerm = req.query.q || "";
   if (!searchTerm) return res.json([]);
-  const db = await readDatabase();
-  const results = db.ads.filter((ad) =>
-    ad.productName.toLowerCase().includes(searchTerm)
-  );
-  res.status(200).json(results);
+
+  try {
+    const results = await Products_model.find({
+      productName: { $regex: searchTerm, $options: "i" },
+    });
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Hiba a keresés során!" });
+  }
+});
+
+router.get("/api/search-users", async (req, res) => {
+  const searchTerm = req.query.q || "";
+  if (!searchTerm) return res.json([]);
+
+  try {
+    const results = await Users_model.find({
+      username: { $regex: searchTerm, $options: "i" },
+    }).select("username picture");
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Hiba a felhasználók keresésekor!" });
+  }
 });
 
 router.get("/api/search-users", async (req, res) => {
@@ -121,42 +140,31 @@ router.post(
 );
 
 router.post("/create-ad", upload.single("productImage"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ message: "Kép feltöltése kötelező!" });
-  }
-
-  const { productName, price, description, location, author } = req.body;
-  const imageUrl = `/uploads/${req.file.filename}`;
-
   try {
-    const newProduct = await Products_model.create({
-      id: Date.now(),
-      productName,
-      price: Number(price),
-      description,
-      location,
-      imageUrl,
-      author,
-    });
-
-    const authorData = await Users_model.findOne({ username: author });
-
-    if (authorData && authorData.email) {
-      await sendEmail(
-        authorData.email,
-        "Sikeres termékfeltöltés!",
-        `Szia ${author}! A termékedet "${productName}" néven sikeresen meghirdetted.`
-      );
+    if (!req.file) {
+      return res.status(400).json({ message: "Kép feltöltése kötelező!" });
     }
 
-    res
-      .status(201)
-      .json({ message: "Termék sikeresen meghirdetve!", product: newProduct });
+    const { productName, price, description, location, author } = req.body;
+
+    const newProduct = new Products_model({
+      id: Date.now(),
+      productName,
+      description,
+      location,
+      imageUrl: `/uploads/${req.file.filename}`,
+      author: author || "Ismeretlen",
+      price: Number(price),
+    });
+
+    await newProduct.save();
+
+    res.status(201).json({ message: "Termék sikeresen feltotlve!" });
   } catch (error) {
-    console.error("Hiba a feltöltéskor:", error);
+    console.error("Szerver hiba:", error);
     res
       .status(500)
-      .json({ message: "Hiba történt az adatbázis mentés során!" });
+      .json({ message: "Hiba történt a mentés során!", error: error.message });
   }
 });
 
@@ -184,17 +192,18 @@ router.get("/api/all-ads", async (req, res) => {
 });
 
 router.delete("/delete-ad/:id", async (req, res) => {
-  const adId = parseInt(req.params.id, 10);
-  const db = await readDatabase();
-  const newAds = db.ads.filter((ad) => ad.id !== adId);
-  if (db.ads.length === newAds.length) {
-    return res.status(404).json({ message: "A hirdetés nem található!" });
-  }
-  db.ads = newAds;
-  await writeDatabase(db);
-  res.status(200).json({ message: "Hirdetés sikeresen törölve!" });
-});
+  try {
+    const adId = parseInt(req.params.id, 10);
+    const result = await Products_model.findOneAndDelete({ id: adId });
 
+    if (!result) {
+      return res.status(404).json({ message: "A hirdetés nem található!" });
+    }
+    res.status(200).json({ message: "Hirdetés sikeresen törölve!" });
+  } catch (error) {
+    res.status(500).json({ message: "Hiba a törlés során!" });
+  }
+});
 router.get("/api/users/:username", async (req, res) => {
   try {
     const username = req.params.username;
@@ -210,17 +219,16 @@ router.get("/api/users/:username", async (req, res) => {
 
 router.post("/send-message", async (req, res) => {
   const { fromUser, toUser, message } = req.body;
-  const db = await readDatabase();
-  db.messages.push({
-    id: Date.now(),
-    fromUser,
-    toUser,
-    message,
-    timestamp: Date.now(),
-    isRead: false,
-  });
-  await writeDatabase(db);
-  res.status(201).json({ message: "Üzenet elküldve!" });
+  try {
+    await Message_model.create({
+      fromUser,
+      toUser,
+      message,
+    });
+    res.status(201).json({ message: "Üzenet elküldve!" });
+  } catch (error) {
+    res.status(500).json({ error: "Nem sikerült elküldeni az üzenetet." });
+  }
 });
 
 router.get("/api/conversations/:username", async (req, res) => {
@@ -297,22 +305,15 @@ router.get("/api/unread-conversations-count/:username", async (req, res) => {
 
 router.post("/mark-messages-as-read", async (req, res) => {
   const { loggedInUser, partner } = req.body;
-  const db = await readDatabase();
-  let changed = false;
-  db.messages.forEach((msg) => {
-    if (
-      msg.toUser === loggedInUser &&
-      msg.fromUser === partner &&
-      !msg.isRead
-    ) {
-      msg.isRead = true;
-      changed = true;
-    }
-  });
-  if (changed) {
-    await writeDatabase(db);
+  try {
+    await Message_model.updateMany(
+      { toUser: loggedInUser, fromUser: partner, isRead: false },
+      { $set: { isRead: true } }
+    );
+    res.status(200).json({ message: "Üzenetek olvasottá téve." });
+  } catch (error) {
+    res.status(500).json({ error: "Hiba az állapot frissítésekor." });
   }
-  res.status(200).json({ message: "Üzenetek olvasottá téve." });
 });
 
 module.exports = router;

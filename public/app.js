@@ -624,18 +624,30 @@ async function loadChat(loggedInUser) {
 
 function setupNewAdForm(loggedInUser) {
   const form = document.getElementById("new-ad-form");
+  if (!form) return;
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+
     const formData = new FormData(form);
-    formData.append("author", loggedInUser);
-    const response = await fetch("/create-ad", {
-      method: "POST",
-      body: formData,
-    });
-    const data = await response.json();
-    alert(data.message);
-    if (response.ok) {
-      window.location.href = "/profile.html";
+    if (loggedInUser) {
+      formData.append("author", loggedInUser);
+    }
+
+    try {
+      const response = await fetch("/create-ad", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      alert(data.message);
+
+      if (response.ok) {
+        window.location.href = "/profile.html";
+      }
+    } catch (error) {
+      console.error("Hiba:", error);
     }
   });
 }

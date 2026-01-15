@@ -50,11 +50,26 @@ const Order = new Schema({
   Sellername: { type: String, required: true },
   buyerName: { type: String, required: true },
 });
+const MessageSchema = new Schema({
+  fromUser: String,
+  toUser: String,
+  message: String,
+  timestamp: { type: Number, default: Date.now },
+  isRead: { type: Boolean, default: false },
+});
+
+const Message_model = model("Message", MessageSchema);
 
 const Order_model = model("Order", Order);
 
 const Payment_model = model("Payment", Payment);
 
-const Products_model = model("Products", Products);
+const Products_model = model("Products", Products, "products");
 
-module.exports = { Users_model, Products_model, Payment_model, Order_model };
+module.exports = {
+  Users_model,
+  Products_model,
+  Payment_model,
+  Order_model,
+  Message_model,
+};
